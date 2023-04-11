@@ -1,0 +1,163 @@
+<div class="body">
+    <div class="spaceBetweenDivs1">
+        <h4><b>Register Your Company:</b></h4>
+        <mat-expansion-panel style="width:50%">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Register
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form #formForRegistration="ngForm">
+        <div>
+            <mat-form-field>
+                <mat-label>Code</mat-label>
+                <input matInput name="companyCode" #companyCode="ngModel" pattern="[a-zA-Z0-9]+$" [(ngModel)]="companyObject.companyCode" (change)="checkIsCodeAlreadyExist(companyObject.companyCode)" required>
+            </mat-form-field><br>
+            <span *ngIf="companyCode.invalid && companyCode.touched">Please Enter the Valid Company Code!</span>
+            <span *ngIf="flag">{{codeErrMessage}}</span>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput name="companyName" #companyName="ngModel" pattern="[a-zA-Z]+$" maxlength="15" [(ngModel)]="companyObject.companyName" required>
+            </mat-form-field><br>
+            <span *ngIf="companyName.invalid && companyName.touched">Please Enter the Valid Name!</span>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>CEO</mat-label>
+                <input matInput name="companyCEO" #companyCEO="ngModel" pattern="[a-zA-Z]+$" maxlength="20" [(ngModel)]="companyObject.companyCEO" required>
+            </mat-form-field><br>
+            <span *ngIf="companyCEO.invalid && companyCEO.touched">Please Enter the Valid CEO!</span>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>Turnover</mat-label>
+                <input matInput name="companyTurnover" #companyTurnover="ngModel" pattern="[0-9]+$" minlength="9" [(ngModel)]="companyObject.companyTurnover" required>
+            </mat-form-field><br>
+            <span *ngIf="companyTurnover.invalid && companyTurnover.touched">Please Enter the Valid Input(should be greater than 10crore)!</span>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>Website</mat-label>
+                <input matInput name="companyWebsite" #companyWebsite="ngModel" pattern="(http(s)?://)?([\w-]+\.)+[\w-]+(/[\w- ;,./?%&=]*)?" [(ngModel)]="companyObject.companyWebsite" required>
+            </mat-form-field><br>
+            <span *ngIf="companyWebsite.invalid && companyWebsite.touched">Please Enter the Valid Company Website!</span>
+        </div>
+        <div>
+        <mat-form-field appearance="fill">
+            <mat-label>Stock Exchange</mat-label>
+            <mat-select [(ngModel)]="companyObject.stockExchange" name="stockExchange" #stockExchange="ngModel" required>
+              <mat-option *ngFor="let stock of stockExchangeArray" [value]="stock">{{stock}}</mat-option>
+            </mat-select>
+          </mat-form-field><br>
+          <span *ngIf="stockExchange.invalid && stockExchange.touched">Please Select the Valid Stock Exchange!</span>
+        </div>
+        <mat-action-row>
+            <div class="example-button-container">
+                <button mat-mini-fab color="primary" [disabled]="formForRegistration.invalid" (click)="addCompany()">
+                  <mat-icon>plus_one</mat-icon>
+                </button>
+              </div>
+        </mat-action-row>
+    </form>
+        </mat-expansion-panel><br><br>
+        <span *ngIf="addFlag" style="color:green;font-size:25px;">{{successMesage}}</span>
+    </div>
+    <div class="spaceBetweenDivs">
+        <h4><b>View All company Details:</b></h4>
+        <div> 
+              <button mat-raised-button color="warn" (click)="viewAllCompany()">View All Company Information</button>
+            <br><br>
+            <table *ngIf="showViewAllTable" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                <!-- Code Column -->
+                <ng-container matColumnDef="Company Code">
+                  <th mat-header-cell *matHeaderCellDef>Code</th>
+                  <td mat-cell *matCellDef="let companyObject"><a href="stock" (click)="setCompanyCode(companyObject.companyCode)">{{companyObject.companyCode}}</a></td>
+                </ng-container>
+              
+                <!-- Name Column -->
+                <ng-container matColumnDef="Company Name">
+                  <th mat-header-cell *matHeaderCellDef>Name</th>
+                  <td mat-cell *matCellDef="let companyObject">{{companyObject.companyName}}</td>
+                </ng-container>
+              
+                <!-- CEO Column -->
+                <ng-container matColumnDef="Company CEO">
+                  <th mat-header-cell *matHeaderCellDef>CEO</th>
+                  <td mat-cell *matCellDef="let companyObject">{{companyObject.companyCEO}}</td>
+                </ng-container>
+              
+                <!-- Turnover Column -->
+                <ng-container matColumnDef="Company Turnover">
+                  <th mat-header-cell *matHeaderCellDef>Turnover</th>
+                  <td mat-cell *matCellDef="let companyObject">{{companyObject.companyTurnover}}</td>
+                </ng-container>
+
+                <!-- Website Column -->
+                <ng-container matColumnDef="Company Website">
+                    <th mat-header-cell *matHeaderCellDef>Website</th>
+                    <td mat-cell *matCellDef="let companyObject"> {{companyObject.companyWebsite}} </td>
+                  </ng-container>
+
+                  <!-- Stock Price Column -->
+                <ng-container matColumnDef="Current Stock Price">
+                    <th mat-header-cell *matHeaderCellDef>Current Stock Price</th>
+                    <td mat-cell *matCellDef="let companyObject"> {{companyObject.currentStockPrice}}</td>
+                  </ng-container>
+
+                  <!-- Stock Exchange Column -->
+                <ng-container matColumnDef="Stock Exchange">
+                    <th mat-header-cell *matHeaderCellDef>Stock Exchange</th>
+                    <td mat-cell *matCellDef="let companyObject">{{companyObject.stockExchange}}</td>
+                </ng-container>
+                <ng-container matColumnDef="Delete/Remove">
+                    <th mat-header-cell *matHeaderCellDef>Delete/Remove</th>
+                    <td mat-cell *matCellDef="let companyObject">
+                        <button mat-fab color="primary" class="alignIcon"(click)="deleteCompanyById(companyObject.companyCode)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+              
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>  <br><br>
+              <span *ngIf="viewFlag">{{noDataFoundMessage}}</span>    
+        </div>
+    </div>
+    <div class="spaceBetweenDivs">
+        <h4><b>View Company Details Based on Company Code:</b></h4>
+        <form #searchForm="ngForm">
+        <mat-form-field class="example-full-width" style="width:50%">
+            <input type="search" matInput placeholder="Company Code" name="search" #search="ngModel" pattern="[a-zA-Z0-9]+$" [(ngModel)]= "companyObjectForView.companyCode" required>
+            <button type="button" class="btn btn-outline-primary" matSuffix mat-button [disabled]="searchForm.invalid" (click)="viewCompanyById(companyObjectForView.companyCode)">Search</button>
+        </mat-form-field><br>
+        <span *ngIf="search.invalid && search.touched">Please Enter the Valid Company Code!</span>
+    </form>
+        <div><br><br>
+            <table *ngIf="showViewByIdTable" class="table table trapped">
+                <thead>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>CEO</th>
+                    <th>Turnover</th>
+                    <th>Website</th>
+                    <th>Stock Exchange</th>
+                    <th>Current Stock Price</th>
+                </thead>
+                <tbody>           
+                        <td>{{compArray[0]}}</td>
+                        <td>{{compArray[1]}}</td>
+                        <td>{{compArray[2]}}</td>
+                        <td>{{compArray[3]}}</td>
+                        <td>{{compArray[4]}}</td>
+                        <td>{{compArray[5]}}</td>
+                        <td>{{compArray[6]}}</td>
+                </tbody>
+            </table><br>
+            <span *ngIf="idFlag">{{errorMessage}}</span>    
+        </div> 
+    </div>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</div>

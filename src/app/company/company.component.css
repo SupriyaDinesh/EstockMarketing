@@ -1,0 +1,26 @@
+.body{
+    margin-left:150px;
+}
+.spaceBetweenDivs{
+    padding-top:50px;
+    font-size: x-small;
+}
+.spaceBetweenDivs1{
+    padding-top:30px;
+}
+.alignIcon{
+    margin-left: 10px;
+}
+table, th, td {
+    border: 1px solid black;
+  }
+  td,th{
+      font-size:15px;
+  }
+  span{
+      color:red;
+      font-size: 15px;
+  }
+  mat-form-field{
+      width:75%;
+  }
