@@ -1,0 +1,5 @@
+package com.stock.managing.service;
+
+public class StockService {
+
+}

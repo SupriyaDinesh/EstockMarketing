@@ -1,0 +1,10 @@
+server:
+  port: 8084
+zuul:
+  routes:
+    company-service:
+      path: /company/**
+      url: http://localhost:8081
+    stock-service:
+      path: /stock/**
+      url: http://localhost:8082

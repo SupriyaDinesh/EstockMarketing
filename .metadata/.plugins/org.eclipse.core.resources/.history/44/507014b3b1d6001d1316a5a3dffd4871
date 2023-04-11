@@ -1,0 +1,5 @@
+zuul.routes.company-service.path=/company/**
+zuul.routes.company-service.url=http://localhost:8081
+zuul.routes.stock-service.path=/stock/**
+zuul.routes.stock-service.url=http://localhost:8082
+server.port=8084

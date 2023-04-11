@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move package &apos;com.stock.stockmanaging.dto&apos; to &apos;stock/src/main/java/com.stock.managing.entity&apos;&#x0D;&#x0A;- Original project: &apos;StockAPI&apos;&#x0D;&#x0A;- Destination element: &apos;stock/src/main/java/com.stock.managing.entity&apos;&#x0D;&#x0A;- Original element: &apos;StockAPI/src/main/java/com.stock.stockmanaging.dto&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move package" destination="=stock/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.stock.managing.entity" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.stock.stockmanaging.dto" flags="589830" fragments="1" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.movePackages" stamp="1680071559374" version="1.0"/>
+</session>

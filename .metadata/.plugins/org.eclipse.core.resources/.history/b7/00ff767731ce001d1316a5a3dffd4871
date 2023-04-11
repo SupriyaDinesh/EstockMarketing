@@ -1,0 +1,108 @@
+package com.stock.managing.controller;
+
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import com.stock.managing.entity.Stock;
+import com.stock.managing.service.StockService;
+import com.stock.stockmanaging.dto.Company;
+
+
+@RestController
+@CrossOrigin("*")
+public class StockController {
+
+	@Autowired
+	StockService stockService;
+
+	@Autowired
+	RestTemplate restTemplate;
+	
+	@Value("${company.get.url}")
+	private String getUrl;
+	
+	@Value("${company.update.url}")
+	private String updateUrl;
+	
+	//Add stock details to stock table  and update latest stock price in company table
+	@PostMapping("stock/add/{id}")
+	public ResponseEntity<Stock> addStock(@RequestBody Stock stock, @PathVariable String id) {
+		System.out.println("Inside addStock!!==>"+"=="+stock.toString()+"=="+stock.getStockPrice()+"=="+id); 
+		//Company existCompany = companyService.getCompanybyId(id);
+		//Company existCompany = restTemplate.getForObject(getUrl, Company.class);
+		//HttpEntity entity = new HttpEntity(null);
+		ResponseEntity<Company> response = restTemplate.exchange(getUrl+id, HttpMethod.GET, new HttpEntity(null), new ParameterizedTypeReference<Company>() {});
+		System.out.println("Done with getUrl exchange!!");
+		//Company com = (Company) existCompany;
+		System.out.println("======"+response+"===");
+		Company existCompany = response.getBody();
+		if (existCompany != null) {
+			existCompany.setCurrentStockPrice(stock.getStockPrice());
+			stock.setCompanyCode(id);
+			try {				
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+				HttpEntity<Company> httpEntity = new HttpEntity<>(existCompany,headers);
+				System.out.println("Request Body for PUT is-->"+httpEntity);
+				ResponseEntity<Boolean> exchange = restTemplate.exchange(updateUrl, HttpMethod.PUT, httpEntity,Boolean.class);
+				System.out.println("Is Company Table Updated with latest Stock Price?->"+exchange);
+				if (stockService.addStock(stock)) {
+					return new ResponseEntity<Stock>(stock, HttpStatus.CREATED);
+				}
+				
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}			
+		}
+			return new ResponseEntity<Stock>(stock, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	//Read-Get the stock details of a company between the given time period
+	@GetMapping("stock/get/{ccode}/{startDate}/{endDate}")
+	public ResponseEntity<List<Stock>> getStockbyIdBetweentheGivenDates(@PathVariable String ccode,
+			@DateTimeFormat(iso = ISO.DATE) @PathVariable LocalDate startDate, //in YYYY-MM-dd format
+			@DateTimeFormat(iso = ISO.DATE) @PathVariable LocalDate endDate) {
+		System.out.println(ccode + "==" + startDate + "==" + endDate);
+		 List<Stock> stockList = stockService.getStockByIdBetweenTheGivenDates(ccode, startDate, endDate);
+		 System.out.println("Stock List is-->"+stockList);
+		 if(stockList.size() > 0)
+			 return new ResponseEntity<List<Stock>>(stockList, HttpStatus.OK);
+		 else
+			 return new ResponseEntity<List<Stock>>(stockList, HttpStatus.NOT_FOUND);
+	}
+	
+	//Read-Get the list of stock price of a company
+		@GetMapping("stock/get/{ccode}")
+		public ResponseEntity<List> getStockbyIdBetweentheGivenDates(@PathVariable String ccode) {
+			System.out.println("code is-->"+ccode);
+			 List stockPriceList = stockService.getListOfStockPrice(ccode);
+			 if(stockPriceList.size() > 0)
+				 return new ResponseEntity<List>(stockPriceList, HttpStatus.OK);
+			 else
+				 return new ResponseEntity<List>(stockPriceList, HttpStatus.NOT_FOUND);
+		}
+		@DeleteMapping("stock/delete/{code}")
+		public int deleteStockbyId(@PathVariable String code) {
+			System.out.println("code is-->"+code);
+			 return stockService.deleteStockById(code);
+		}
+}

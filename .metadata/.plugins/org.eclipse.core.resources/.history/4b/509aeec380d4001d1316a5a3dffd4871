@@ -1,0 +1,2 @@
+zuul.routes.company-service.path=/company/**
+

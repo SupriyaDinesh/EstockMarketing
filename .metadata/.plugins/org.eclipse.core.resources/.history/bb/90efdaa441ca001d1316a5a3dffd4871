@@ -1,0 +1,56 @@
+package com.company.stockmarketing.service;
+
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.company.stockmarketing.dao.CompanyRepository;
+import com.company.stockmarketing.entity.Company;
+
+
+@Service
+public class CompanyService {
+
+	@Autowired
+	CompanyRepository repo;
+
+	// ADD-Company Registration or adding company details
+	public Company addCompanyDetails(Company company) {
+		return repo.save(company);
+
+	}
+
+	// READ-Get all Company Details with latest stock price
+	public List<Company> viewAllCompanyDetails() {
+		return repo.findAll();
+	}
+
+	public Optional<Company> viewCompanyDetailsById(String id) {
+		return repo.findById(id);
+	}
+
+	// Delete-Delete the Company by Id
+	public boolean deleteCompanyById(String companyCode) {
+		repo.deleteById(companyCode);
+		System.out.println("Deleted by Id Successfully!!");
+		return true;
+	}
+
+	// Update-not calling directly
+	public boolean updateComapny(Company company) {
+		@SuppressWarnings("deprecation")
+		Company companyData = repo.getById(company.getCompanyCode());
+		if (companyData != null) {
+			company.setCurrentStockPrice(company.getCurrentStockPrice());
+			repo.saveAndFlush(company);
+		}
+		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	public Company getCompanybyId(String id) {
+		Company CompanyData = repo.getById(id);
+		return CompanyData;
+	}
+}

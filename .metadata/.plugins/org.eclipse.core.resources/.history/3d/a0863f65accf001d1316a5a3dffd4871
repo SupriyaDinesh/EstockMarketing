@@ -1,0 +1,113 @@
+package com.stock.marketing.controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.stock.marketing.entity.Company;
+import com.stock.marketing.exception.StockMarketingException;
+import com.stock.marketing.service.CompanyService;
+
+@RestController
+@CrossOrigin("*")
+public class CompanyController {
+
+	@Autowired
+	CompanyService companyService;
+	
+	@Autowired
+	RestTemplate restTemplate;
+	
+	@Value("${stock.delete.url}")
+	private String url;
+	
+
+	@PostMapping("company/register")
+	public ResponseEntity<Company> addCompany(@RequestBody Company company) {
+		System.out.println("Company Registration Detail is-->" + company);
+		Company addedCompanyDetails = null;
+		try {
+			addedCompanyDetails = companyService.addCompanyDetails(company);
+			if(addedCompanyDetails == null)
+				throw new StockMarketingException("Failed to Register Company, Please check Logs for  more Details !!");
+		}
+		catch(StockMarketingException e) {
+			e.printStackTrace();
+		}
+		
+	
+			return new ResponseEntity<Company>(addedCompanyDetails, HttpStatus.CREATED);
+		
+	}
+
+	@GetMapping("company/getall")
+	public ResponseEntity<List<Company>> viewAllCompany() {
+		 List<Company> allCompanyDetails = companyService.viewAllCompanyDetails();
+		 if(allCompanyDetails.size()>0)
+			 return new ResponseEntity<List<Company>>(allCompanyDetails,HttpStatus.OK);
+		 else
+			 return new ResponseEntity<List<Company>>(allCompanyDetails,HttpStatus.NOT_FOUND);
+	}
+
+	@GetMapping("company/info/{id}")
+	public ResponseEntity<Optional<Company>> viewCompanybyId(@PathVariable String id) {
+		 Optional<Company> companyDetailsById = companyService.viewCompanyDetailsById(id);
+		if(companyDetailsById.isPresent())
+			return new ResponseEntity<Optional<Company>>(companyDetailsById,HttpStatus.OK);
+		 else
+			 return new ResponseEntity<Optional<Company>>(companyDetailsById,HttpStatus.NOT_FOUND);
+	}
+
+	@DeleteMapping("company/delete/{id}")
+	public ResponseEntity deleteCompanyById(@PathVariable String id) {
+		System.out.println("Inside deleteCompanyById");
+			try {
+				/**delete compaany details from company table**/
+				if(companyService.deleteCompanyById(id))
+				{
+				System.out.println("Inside delete stock try");
+				/**also delete respective company stock details from stock table**/
+				HttpEntity entity = new HttpEntity(null);
+				ResponseEntity<Integer> response = restTemplate.exchange(url+id, HttpMethod.DELETE, entity, Integer.class);
+				if(response.getBody().toString().isBlank())
+					throw new StockMarketingException("Failed to delte the Comapny Details, please check the logs for more information!!");
+			}
+			}
+			catch(StockMarketingException e) {
+				e.printStackTrace();
+			}
+		
+		return new ResponseEntity(HttpStatus.OK);
+	}	
+	@PutMapping("company/update")
+	public boolean updateCompany(@RequestBody Company company) {
+		try {
+			boolean updated = companyService.updateCompany(company);
+			if(!updated)
+				throw new StockMarketingException("Failed to Update!!");
+		}
+		catch(StockMarketingException e) {
+			e.printStackTrace();
+			
+		}
+		 return true;
+		
+	}
+}

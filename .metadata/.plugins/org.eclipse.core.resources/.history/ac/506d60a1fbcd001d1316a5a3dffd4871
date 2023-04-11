@@ -1,0 +1,5 @@
+package com.stock.stockmanaging.dto;
+
+public class Company {
+
+}

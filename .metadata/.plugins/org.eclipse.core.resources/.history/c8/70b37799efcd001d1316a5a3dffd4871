@@ -1,0 +1,23 @@
+package com.stock.stockmanaging;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
+@ComponentScan(basePackageClasses = {com.stock.stockmanaging.dao.StockRepository.class})
+public class StockmanagingApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(StockmanagingApplication.class, args);
+		System.out.println("Your Stock API APP Started yeah!!");
+	}
+	@Bean
+	public RestTemplate getRestTemplate() {
+		return new RestTemplate();
+	}
+}

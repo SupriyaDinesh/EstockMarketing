@@ -1,0 +1,57 @@
+package com.stock.managing.service;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.stock.managing.dao.StockRepository;
+import com.stock.managing.entity.Stock;
+
+
+@Service
+public class StockService {
+	Logger logger = LoggerFactory.getLogger(StockService.class);
+	
+	@Autowired
+	StockRepository stockRepo;
+	
+	/**Add-Add stock price to specific company**/
+	public boolean addStock(Stock stock) {
+		
+		logger.info("Stock in service is-->"+stock.toString());	
+		Stock stockObject = new Stock();
+		stockObject.setStockPrice(stock.getStockPrice());
+		stockObject.setCompanyCode(stock.getCompanyCode());
+		Date date = new Date();  
+	    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    String currentDateTime = formatter.format(date);  
+	    logger.info("Date Format with yyyy-MM-dd HH:mm:ss is [{}]"+currentDateTime); 
+	    stockObject.setTimeStamp(currentDateTime);
+		stockRepo.saveAndFlush(stockObject);
+		return true;
+		
+	}
+	
+	/**Read-view all stock details between the give dates**/
+	public List<Stock> getStockByIdBetweenTheGivenDates(String ccode,LocalDate startDate,LocalDate endDate){
+		return stockRepo.getStockByIdBetweenTheGivenDates(ccode,startDate,endDate);
+	}
+	
+	/**Delete**/
+	@org.springframework.transaction.annotation.Transactional
+	public int deleteStockById(String companyCode) {
+		logger.info("Inside deleteStockById!!");
+		return stockRepo.deleteStockDetailsByCompanyCode(companyCode);
+	}
+
+	public List getListOfStockPrice(String ccode) {
+		return stockRepo.getStockPriceList(ccode);
+	}
+}
