@@ -111,7 +111,5 @@ export class CompanyComponent {
   setCompanyCode(code:string){
     console.log("code is-->"+code)
     sessionStorage.setItem("companyCode",code);
-    debugger;
-
   }
 }
