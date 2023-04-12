@@ -7,11 +7,11 @@ import {Company } from './company.model';
   providedIn: 'root'
 })
 export class CompanyService {
-  public apiPost ="http://localhost:8083/company/register";
-  public apiGetAll ="http://localhost:8083/company/getall";
-  public apiGetById ="http://localhost:8083/company/info";
-  public apiDeleteById ="http://localhost:8083/company/delete";
-  public apiGetAllStockPriceList ="http://localhost:8083/stock/get";
+  public apiPost ="http://localhost:8085/api/company/company/register";
+  public apiGetAll ="http://localhost:8085/api/company/company/getall";
+  public apiGetById ="http://localhost:8085/api/company/company/info";
+  public apiDeleteById ="http://localhost:8085/api/company/company/delete";
+  public apiGetAllStockPriceList ="http://localhost:8085/api/stock/stock/get";
 
   constructor(private http:HttpClient) { }
 //Add

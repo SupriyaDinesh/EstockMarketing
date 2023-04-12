@@ -7,9 +7,9 @@ import { Stock } from './stock.model';
   providedIn: 'root'
 })
 export class StockService {
-  public apiPostById ="http://localhost:8083/stock/add";
-  public apiGetAllDetailsBetweenDates ="http://localhost:8083/stock/get";
-  public apiGetAllStockPriceList ="http://localhost:8083/stock/get";
+  public apiPostById ="http://localhost:8085/api/stock/stock/add";
+  public apiGetAllDetailsBetweenDates ="http://localhost:8085/api/stock/stock/get";
+  public apiGetAllStockPriceList ="http://localhost:8085/api/stock/stock/get";
 
   constructor(private http:HttpClient) { }
 //Add
